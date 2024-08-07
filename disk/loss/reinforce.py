@@ -46,9 +46,15 @@ class Reinforce:
                     + self.lm_kp * n_keypoints
 
         stats = {
+            'loss'       : loss,
+            'reinforce'  : reinforce,
+            'kp_penalty' : kp_penalty,
             'reward'     : exp_reward,
             'n_keypoints': n_keypoints,
             'n_pairs'    : exp_n_pairs,
+            'lm_kp'      : self.lm_kp,
+            'lm_tp'      : self.reward.lm_tp,
+            'lm_fp'      : self.reward.lm_fp,
         }
 
         return loss, stats

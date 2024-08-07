@@ -136,6 +136,10 @@ else:
 optim = torch.optim.Adam(disk.parameters(), lr=1e-4)
 
 for e, chunk in enumerate(train_chunk_iter):
+    if e <= 5:
+        with open(f'{args.save_dir}/names.txt', 'a') as f:
+            f.write(f'epoch {e}\n')
+
     # this allows us to offset the annealing below, for instance when resuming
     # training from a checkpoint
     e += args.epoch_offset
@@ -207,6 +211,20 @@ for e, chunk in enumerate(train_chunk_iter):
 
         for sample in stats.flat:
             logger.add_scalars(sample, prefix='train')
+        logger.add_scalars(inverse_T, prefix='train')
+
+        if e >= 5:
+            with open(f"{args.save_dir}/names.txt", "a") as f:
+                names = [
+                    "_".join(
+                        [
+                            triplet[0].bitmap_path.split("/")[-3],
+                            *[image.bitmap_path.split("/")[-1] for image in triplet],
+                        ]
+                    )
+                    for triplet in images
+                ]
+                f.write("\n".join(names) + "\n")
 
         # first epoch can be cut short after args.warmup optimization steps
         if e == 0 and i == args.warmup:
